@@ -1,0 +1,46 @@
+# AI Action Guardrail - Policy Configuration
+#
+# Each policy has:
+#   id            - unique identifier
+#   description   - human readable explanation
+#   action_type   - which action type this rule applies to
+#   condition     - field/operator/value to evaluate against action.parameters
+#   outcome       - block | require_hitl | log_and_allow
+#
+# Supported operators: greater_than, greater_than_or_equal, less_than,
+#   less_than_or_equal, equals, not_equals, contains, not_contains,
+#   external_domain, internal_domain
+#
+# Priority (when multiple rules match the same action): BLOCK beats
+# REQUIRE_HITL beats LOG_AND_ALLOW (fail-closed / safest-outcome-wins).
+# If no rule matches, the safe default is LOG_AND_ALLOW.
+
+internal_domains:
+  - mycompany.com
+
+policies:
+  - id: bulk_delete_limit
+    description: Block database deletes above 100 records
+    action_type: database_delete
+    condition:
+      field: record_count
+      operator: greater_than
+      value: 100
+    outcome: block
+
+  - id: external_email_hitl
+    description: Require human approval for emails sent to external domains
+    action_type: send_email
+    condition:
+      field: recipient_domain
+      operator: external_domain
+    outcome: require_hitl
+
+  - id: confidential_read_logging
+    description: Log and allow reads of paths containing "confidential"
+    action_type: file_read
+    condition:
+      field: path
+      operator: contains
+      value: confidential
+    outcome: log_and_allow
