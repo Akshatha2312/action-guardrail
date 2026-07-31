@@ -6,8 +6,7 @@ import pandas as pd
 import requests
 import streamlit as st
 
-API_URL = os.getenv("GUARDRAIL_API_URL", "http://localhost:8000")
-
+API_URL = "https://action-guardrail-pug7.onrender.com"
 st.set_page_config(page_title="AI Action Guardrail", page_icon="🛡️", layout="wide")
 
 # ---------------------------------------------------------------- styling --
